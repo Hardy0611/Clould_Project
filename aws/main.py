@@ -1,5 +1,5 @@
 from typing import List
-from lib import get_model
+from package import get_model
 import logging
 import numpy as np
 
