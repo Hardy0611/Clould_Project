@@ -1,9 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.models import load_model, Model
 import psutil 
-import numpy as np 
-from PIL import Image
-import io
 
 def split_model(model, select_layer):
     split_layer = model.get_layer(select_layer)
@@ -19,31 +16,23 @@ def split_model(model, select_layer):
 
     return model1, model2
 
-def dynamic_allocate():
+def dynamic_allocate(spilt):
     model = load_model("/Users/tszhofan/Documents/Coding/Clould_Project/data/model/cnn_emotion_detection.h5")
     layers = ["dropout", "dropout_1", "dropout_2"]
     cpu_usage = psutil.cpu_percent()
-    spilt = 99
-    if cpu_usage == 0:
+    if spilt == 2:
         select_layer = layers[2]
-        spilt = 2
-    elif cpu_usage < 10 and cpu_usage > 0: 
+    elif spilt == 1: 
         select_layer = layers[1]
-        spilt = 1
-    else: 
+    elif spilt == 0: 
         select_layer = layers[0]
-        spilt = 0
+    else:
+        return None, None, None
 
     model1, model2 = split_model(model, select_layer)
-    return model1, model2, spilt
+    return model2
 
-def run_model(model, img_bytes): 
-    img = Image.open(io.BytesIO(img_bytes)).convert("L").resize((48, 48))
-    img_array = np.array(img).reshape(1, 48, 48, 1).astype('float32')
-    result = model.predict(img_array)
+def run_model(input_data, spilt): 
+    model = dynamic_allocate(spilt)
+    result = model.predict(input_data)
     return result
-
-def get_label(emotions_pred): 
-    emotions = ['fearful','disgust','surprise','happy', 'neutral','sad', 'angry']
-    idx = np.argmax(emotions_pred)
-    return emotions[idx]
