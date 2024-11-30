@@ -12,7 +12,7 @@ def split_model(model, select_layer):
     return model1
 
 def dynamic_allocate():
-    model = load_model("/Users/tszhofan/Documents/Coding/Clould_Project/data/model/face_model.h5")
+    model = load_model("./data/model/face_model.h5")
     layers = ["conv2d", "conv2d_1", "conv2d_2", "conv2d_3"]
     cpu_usage = psutil.cpu_percent()
     stage = 99
